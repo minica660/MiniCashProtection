@@ -41,4 +41,40 @@ public class Event implements Listener {
             event.setCancelled(true);
         }
     }
+
+
+    @EventHandler
+    public void onPlayerInteract(PlayerInteractEvent event) {
+
+
+        if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
+
+            if(event.isBlockInHand()) {
+
+
+                ItemStack eventItem = event.getItem();
+
+                if (eventItem != null && event.getItem().getType().isBlock()) {
+
+                    Player player = event.getPlayer();
+
+                    if (player.hasPermission("minicashprotection.bypass.blockplace")) {
+                        return;
+                    }
+
+                    RegionQuery query = WorldGuard.getInstance().getPlatform().getRegionContainer().createQuery();
+                    LocalPlayer localPlayer = WorldGuardPlugin.inst().wrapPlayer(player);
+
+                    StateFlag.State state = query.queryState(BukkitAdapter.adapt(event.getClickedBlock().getLocation()), localPlayer, MP_BLOCK_PLACE_FLAG);
+
+                    if (state == StateFlag.State.DENY){
+
+                        event.setCancelled(true);
+
+                    }
+                }
+
+            }
+        }
+    }
 }
