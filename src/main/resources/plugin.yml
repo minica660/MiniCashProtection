@@ -1,0 +1,8 @@
+name: MiniCashProtection
+version: '${version}'
+main: MiniCash.MiniCashProtection
+api-version: '1.21'
+author: MiniCash
+description: 保護フラグを追加するプラグイン
+load: STARTUP
+depend: [WorldGuard]
