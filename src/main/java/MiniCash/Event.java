@@ -8,6 +8,7 @@ import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.regions.RegionQuery;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.GlowItemFrame;
 import org.bukkit.entity.ItemFrame;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -19,10 +20,9 @@ public class Event implements Listener {
     @EventHandler(priority = EventPriority.LOWEST)
     public void EntityDamageByEntity(EntityDamageByEntityEvent event) {
 
-        if (!(event.getEntity() instanceof ItemFrame)) {
+        if (!(event.getEntity() instanceof ItemFrame) || !(event.getEntity() instanceof GlowItemFrame)) {
             return;
         }
-
 
         if (!(event.getDamager() instanceof Player player)) {
             return;
