@@ -11,6 +11,7 @@ public final class MiniCashProtection extends JavaPlugin {
 
     private ProtectedCuboidRegion region;
     public static StateFlag USE_ITEMFLAME;
+    public static StateFlag MP_BLOCK_PLACE_FLAG;
 
     @Override
     public void onLoad() {
@@ -23,6 +24,10 @@ public final class MiniCashProtection extends JavaPlugin {
             StateFlag useItemFlame = new StateFlag("use-itemflame", false);
             registry.register(useItemFlame);
             USE_ITEMFLAME = useItemFlame;
+
+            StateFlag mpBlockPlace = new StateFlag("mp-block-place", false);
+            registry.register(mpBlockPlace);
+            MP_BLOCK_PLACE_FLAG = mpBlockPlace;
         } catch (FlagConflictException e) {
             getLogger().severe("フラグの登録に失敗しました (use-itemflame): " + e.getMessage());
         }
