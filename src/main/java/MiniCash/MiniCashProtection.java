@@ -20,16 +20,32 @@ public final class MiniCashProtection extends JavaPlugin {
 
 
         try {
-            // このフラグがtrueの場合は使用アイテムフレームの使用が可能ということになる
+
             StateFlag useItemFlame = new StateFlag("use-itemflame", false);
             registry.register(useItemFlame);
             USE_ITEMFLAME = useItemFlame;
 
+        } catch (FlagConflictException e) {
+
+            if (registry.get("use-itemflame") instanceof StateFlag existing) {
+
+                USE_ITEMFLAME = existing;
+
+            }
+        }
+
+        try {
+
             StateFlag mpBlockPlace = new StateFlag("mp-block-place", false);
             registry.register(mpBlockPlace);
             MP_BLOCK_PLACE_FLAG = mpBlockPlace;
+
         } catch (FlagConflictException e) {
-            getLogger().severe("フラグの登録に失敗しました (use-itemflame): " + e.getMessage());
+            if (registry.get("mp-block-place") instanceof StateFlag existing) {
+
+                MP_BLOCK_PLACE_FLAG = existing;
+
+            }
         }
 
 
@@ -40,6 +56,7 @@ public final class MiniCashProtection extends JavaPlugin {
     public void onEnable() {
         // Plugin startup logic
 //        region = new ProtectedCuboidRegion()
+        getServer().getPluginManager().registerEvents(new Event(), this);
     }
 
     @Override
