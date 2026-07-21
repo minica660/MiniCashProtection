@@ -56,7 +56,7 @@ public final class MiniCashProtection extends JavaPlugin {
     public void onEnable() {
         // Plugin startup logic
 //        region = new ProtectedCuboidRegion()
-        getServer().getPluginManager().registerEvents(new Event(), this);
+        getServer().getPluginManager().registerEvents(new Event(this), this);
     }
 
     @Override

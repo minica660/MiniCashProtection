@@ -10,23 +10,28 @@ import com.sk89q.worldguard.protection.regions.RegionQuery;
 import org.bukkit.Material;
 import org.bukkit.Tag;
 import org.bukkit.block.Block;
-import org.bukkit.block.Sign;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.GlowItemFrame;
 import org.bukkit.entity.ItemFrame;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 
 import static MiniCash.MiniCashProtection.MP_BLOCK_PLACE_FLAG;
 
 public class Event implements Listener {
+
+    private final MiniCashProtection plugin;
+
+    public Event(MiniCashProtection plugin) {
+        this.plugin = plugin;
+    }
+
     @EventHandler(priority = EventPriority.LOWEST)
     public void EntityDamageByEntity(EntityDamageByEntityEvent event) {
 
@@ -38,7 +43,7 @@ public class Event implements Listener {
             return;
         }
 
-        Entity entity =  event.getEntity();
+        Entity entity = event.getEntity();
 
         // WorldGuardのクエリ作成
         RegionQuery query = WorldGuard.getInstance().getPlatform().getRegionContainer().createQuery();
@@ -53,87 +58,64 @@ public class Event implements Listener {
     }
 
 
-    @EventHandler
-    public void onPlayerInteract(PlayerInteractEvent event) {
+    @EventHandler(priority = EventPriority.HIGH)
+    public void onPlayerInteract(BlockPlaceEvent event) {
+
+        Player player = event.getPlayer();
 
 
-        if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
+        if (player.hasPermission("minicashprotection.bypass.blockplace")) {
+            return;
+        }
+
+        Block block = event.getBlockPlaced();
 
 
-            Player player = event.getPlayer();
-            Block clickedBlock = event.getClickedBlock();
-            if (clickedBlock != null) {
-                Material type = clickedBlock.getType();
 
-                if (!player.isSneaking()) {
+        RegionQuery query = WorldGuard.getInstance().getPlatform().getRegionContainer().createQuery();
+        LocalPlayer localPlayer = WorldGuardPlugin.inst().wrapPlayer(player);
 
-                    if (Tag.SHULKER_BOXES.isTagged(type)
-                            || Tag.ALL_SIGNS.isTagged(type)
-                            || Tag.DOORS.isTagged(type)
-                            || Tag.BUTTONS.isTagged(type)
-                            || Tag.TRAPDOORS.isTagged(type)
-                            || Tag.FENCE_GATES.isTagged(type)
-                            || type == Material.CHEST
-                            || type == Material.TRAPPED_CHEST
-                            || type == Material.BARREL
-                            || type == Material.FURNACE
-                            || type == Material.BLAST_FURNACE
-                            || type == Material.SMOKER
-                            || type == Material.CRAFTING_TABLE
-                            || type == Material.ANVIL
-                            || type == Material.CHIPPED_ANVIL
-                            || type == Material.DAMAGED_ANVIL
-                            || type == Material.ENCHANTING_TABLE
-                            || type == Material.LOOM
-                            || type == Material.CARTOGRAPHY_TABLE
-                            || type == Material.GRINDSTONE
-                            || type == Material.SMITHING_TABLE
-                            || type == Material.STONECUTTER
-                            || type == Material.BEACON
-                            || type == Material.HOPPER
-                            || type == Material.DROPPER
-                            || type == Material.DISPENSER
-                            || type == Material.LECTERN
-                            || type == Material.BREWING_STAND
-                            || type == Material.CRAFTER) {
+        StateFlag.State state = query.queryState(BukkitAdapter.adapt(block.getLocation()), localPlayer, MP_BLOCK_PLACE_FLAG);
+
+        if (state == StateFlag.State.DENY) {
 
 
-                        return;
-                    }
+            event.setCancelled(true);
 
-                }
-            }
+            org.bukkit.Location playerLocation = player.getLocation();
 
-            if (event.isBlockInHand()) {
+            if (isJumpBlock(playerLocation, block.getLocation())) {
 
-                if (event.getClickedBlock() != null && event.getClickedBlock().getType().isBlock()) {
+                player.setVelocity(player.getVelocity().setY(-0.12));
 
-
-                    ItemStack eventItem = event.getItem();
-
-                    if (eventItem != null && event.getItem().getType().isBlock()) {
-
-
-                        if (player.hasPermission("minicashprotection.bypass.blockplace")) {
-                            return;
-                        }
-
-                        Block targetBlock = clickedBlock.getRelative(event.getBlockFace());
-
-                        RegionQuery query = WorldGuard.getInstance().getPlatform().getRegionContainer().createQuery();
-                        LocalPlayer localPlayer = WorldGuardPlugin.inst().wrapPlayer(player);
-
-                        StateFlag.State state = query.queryState(BukkitAdapter.adapt(targetBlock.getLocation()), localPlayer, MP_BLOCK_PLACE_FLAG);
-
-                        if (state == StateFlag.State.DENY) {
-
-                            event.setCancelled(true);
-
-                        }
-                    }
-
-                }
             }
         }
+
     }
+
+
+
+
+
+    private boolean isJumpBlock(org.bukkit.Location playerLoc, org.bukkit.Location blockLocation) {
+
+        if (!playerLoc.getWorld().equals(blockLocation.getWorld())){
+            return false;
+        }
+
+        double pX = playerLoc.getX();
+        double pY = playerLoc.getY();
+        double pZ = playerLoc.getZ();
+
+        double bX = blockLocation.getBlockX();
+        double bY = blockLocation.getBlockY();
+        double bZ = blockLocation.getBlockZ();
+
+        boolean yMatches = (pY >= bY && pY <= bY + 1.5);
+        boolean xMatches = (pX >= bX - 0.3 && pX <= bX + 1.3);
+        boolean zMatches = (pZ >= bZ - 0.3 && pZ <= bZ + 1.3);
+
+        return yMatches && xMatches && zMatches;
+    }
+
 }
