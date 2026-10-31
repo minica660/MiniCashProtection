@@ -59,15 +59,15 @@ public final class MiniCashProtection extends JavaPlugin {
         try {
 
             // エリトラ使用を制限
-            StateFlag mpBlockPlace = new StateFlag("use-elytra", false);
-            registry.register(mpBlockPlace);
-            MP_BLOCK_PLACE_FLAG = mpBlockPlace;
+            StateFlag elytra = new StateFlag("use-elytra", false);
+            registry.register(elytra);
+            ELYTRA_USE_FLAG = elytra;
 
         } catch (FlagConflictException e) {
 
             if (registry.get("use-elytra") instanceof StateFlag existing) {
 
-                MP_BLOCK_PLACE_FLAG = existing;
+                ELYTRA_USE_FLAG = existing;
 
             }
         }
