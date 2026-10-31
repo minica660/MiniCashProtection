@@ -4,7 +4,7 @@ plugins {
 }
 
 group = 'MiniCash'
-version = '1.2.1'
+version = '1.2.3'
 
 repositories {
     mavenCentral()
@@ -12,6 +12,11 @@ repositories {
         name = "papermc-repo"
         url = "https://repo.papermc.io/repository/maven-public/"
     }
+
+    maven{url = uri("https://repo.codemc.io/repository/maven-releases/") }
+    maven { url = uri("https://repo.codemc.io/repository/maven-snapshots/") }
+
+
     maven { url "https://maven.enginehub.org/repo/" }
 
 }
@@ -19,6 +24,8 @@ repositories {
 dependencies {
     compileOnly("io.papermc.paper:paper-api:1.21.11-R0.1-SNAPSHOT")
     compileOnly 'com.sk89q.worldguard:worldguard-bukkit:7.0.14'
+    compileOnly("com.github.retrooper:packetevents-spigot:2.14.0")
+
 
 }
 

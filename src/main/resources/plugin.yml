@@ -4,5 +4,17 @@ main: MiniCash.MiniCashProtection
 api-version: '1.21'
 author: MiniCash
 description: 保護フラグを追加するプラグイン
-load: STARTUP
-depend: [WorldGuard]
+load: POSTWORLD
+
+depend:
+  - WorldGuard
+  - packetevents
+
+permissions:
+  minicashprotection.access.*:
+    description: MiniCashProtection独自のアクセス権
+    default: op
+    children:
+      minicashprotection.access.mp-block-place: true
+      minicashprotection.access.useitemflame: true
+      minicashprotection.access.elytra: true
