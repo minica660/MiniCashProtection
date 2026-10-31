@@ -1,6 +1,7 @@
 package MiniCash;
 
 import MiniCash.listener.AntiGlitchPlaceBlock;
+import MiniCash.listener.ElytraEvent;
 import MiniCash.listener.ItemFrameListener;
 import com.github.retrooper.packetevents.PacketEvents;
 import com.sk89q.worldguard.WorldGuard;
@@ -86,6 +87,7 @@ public final class MiniCashProtection extends JavaPlugin {
         // Plugin startup logic
 //        region = new ProtectedCuboidRegion()
         getServer().getPluginManager().registerEvents(new ItemFrameListener(USE_ITEMFLAME), this);
+        getServer().getPluginManager().registerEvents(new ElytraEvent(), this);
 
         // PacketEvents関連
 
