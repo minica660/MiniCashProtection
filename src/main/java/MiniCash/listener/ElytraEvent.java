@@ -20,6 +20,7 @@ public class ElytraEvent implements Listener {
     public void elytraGlide(EntityToggleGlideEvent event) {
 
         if (event.getEntity() instanceof Player player && event.isGliding()) {
+            
 
             if (player.hasPermission("minicashprotection.access.elytra")) {
                 return;

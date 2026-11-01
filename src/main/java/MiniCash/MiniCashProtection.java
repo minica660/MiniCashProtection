@@ -3,6 +3,7 @@ package MiniCash;
 import MiniCash.listener.AntiGlitchPlaceBlock;
 import MiniCash.listener.ElytraEvent;
 import MiniCash.listener.ItemFrameListener;
+import MiniCash.listener.WindChargeUnSitListener;
 import com.github.retrooper.packetevents.PacketEvents;
 import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.protection.flags.StateFlag;
@@ -88,6 +89,7 @@ public final class MiniCashProtection extends JavaPlugin {
 //        region = new ProtectedCuboidRegion()
         getServer().getPluginManager().registerEvents(new ItemFrameListener(USE_ITEMFLAME), this);
         getServer().getPluginManager().registerEvents(new ElytraEvent(), this);
+        getServer().getPluginManager().registerEvents(new WindChargeUnSitListener(this), this);
 
         // PacketEvents関連
 

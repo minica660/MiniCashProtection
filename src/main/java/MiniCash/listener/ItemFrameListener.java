@@ -74,7 +74,7 @@ public class ItemFrameListener implements Listener {
 
             event.setCancelled(true);
 
-            player.sendMessage(Component.text("§cHey! Sorry, but you can't use that here."));
+            player.sendMessage(Component.text("§c§lHey! §r§7Sorry, but you can't change that here."));
 
 
         }
