@@ -20,6 +20,12 @@ public final class MiniCashProtection extends JavaPlugin {
     public static StateFlag MP_BLOCK_PLACE_FLAG;
     public static StateFlag ELYTRA_USE_FLAG;
 
+
+    // 各プラグインが有効かどうかのフラグ
+    private boolean usePacketEvents = false;
+    private boolean useGSit = false;
+
+
     @Override
     public void onLoad() {
 
@@ -41,20 +47,28 @@ public final class MiniCashProtection extends JavaPlugin {
             }
         }
 
-        try {
+        if (getServer().getPluginManager().getPlugin("packetevents") != null) {
+            usePacketEvents = true;
 
-            // 不正な壁登りをパケットレベルで防止！？
-            StateFlag mpBlockPlace = new StateFlag("mp-block-place", false);
-            registry.register(mpBlockPlace);
-            MP_BLOCK_PLACE_FLAG = mpBlockPlace;
+            try {
 
-        } catch (FlagConflictException e) {
+                // 不正な壁登りをパケットレベルで防止！？
+                StateFlag mpBlockPlace = new StateFlag("mp-block-place", false);
+                registry.register(mpBlockPlace);
+                MP_BLOCK_PLACE_FLAG = mpBlockPlace;
 
-            if (registry.get("mp-block-place") instanceof StateFlag existing) {
+            } catch (FlagConflictException e) {
 
-                MP_BLOCK_PLACE_FLAG = existing;
+                if (registry.get("mp-block-place") instanceof StateFlag existing) {
 
+                    MP_BLOCK_PLACE_FLAG = existing;
+
+                }
             }
+
+            loadPacketEvents();
+
+
         }
 
         try {
@@ -74,12 +88,6 @@ public final class MiniCashProtection extends JavaPlugin {
         }
 
 
-
-        // PacketEvents関連
-        PacketEvents.setAPI(SpigotPacketEventsBuilder.build(this));
-        PacketEvents.getAPI().load();
-
-
     }
 
 
@@ -89,21 +97,52 @@ public final class MiniCashProtection extends JavaPlugin {
 //        region = new ProtectedCuboidRegion()
         getServer().getPluginManager().registerEvents(new ItemFrameListener(USE_ITEMFLAME), this);
         getServer().getPluginManager().registerEvents(new ElytraEvent(), this);
-        getServer().getPluginManager().registerEvents(new WindChargeUnSitListener(this), this);
 
+        if (getServer().getPluginManager().getPlugin("GSit") != null) {
+            useGSit = true;
+            registerGSitEvents();
+
+        }
         // PacketEvents関連
 
-        PacketEvents.getAPI().init();
 
-
-        PacketEvents.getAPI().getEventManager().registerListener(new AntiGlitchPlaceBlock(this ,MP_BLOCK_PLACE_FLAG));
+        if (usePacketEvents) {
+            enablePacketEvents();
+        }
     }
 
     @Override
     public void onDisable() {
         // Plugin shutdown logic
-        PacketEvents.getAPI().terminate();
+        if (usePacketEvents) {
+            terminatePacketEvents();
+        }
 
+    }
+
+
+    private void loadPacketEvents() {
+        com.github.retrooper.packetevents.PacketEvents.setAPI(
+                io.github.retrooper.packetevents.factory.spigot.SpigotPacketEventsBuilder.build(this)
+        );
+        com.github.retrooper.packetevents.PacketEvents.getAPI().load();
+    }
+
+    private void enablePacketEvents() {
+        com.github.retrooper.packetevents.PacketEvents.getAPI().init();
+        com.github.retrooper.packetevents.PacketEvents.getAPI().getEventManager().registerListener(
+                new MiniCash.listener.AntiGlitchPlaceBlock(this, MP_BLOCK_PLACE_FLAG)
+        );
+    }
+
+    private void terminatePacketEvents() {
+        com.github.retrooper.packetevents.PacketEvents.getAPI().terminate();
+    }
+
+    private void registerGSitEvents() {
+        getServer().getPluginManager().registerEvents(
+                new MiniCash.listener.WindChargeUnSitListener(this), this
+        );
     }
 
 }

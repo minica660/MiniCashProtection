@@ -8,7 +8,9 @@ load: POSTWORLD
 
 depend:
   - WorldGuard
+softdepend:
   - packetevents
+  - GSit
 
 permissions:
   minicashprotection.access.*:
