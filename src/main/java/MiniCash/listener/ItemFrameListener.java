@@ -9,10 +9,7 @@ import com.sk89q.worldguard.protection.regions.RegionQuery;
 
 import net.kyori.adventure.text.Component;
 import org.bukkit.block.Block;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.ItemFrame;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Projectile;
+import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -42,16 +39,20 @@ public class ItemFrameListener implements Listener {
         // 直接の攻撃者がプレイヤーの場合
         if (event.getDamager() instanceof Player p) {
             player = p;
-        }
-
-        else if (event.getDamager() instanceof Projectile projectile) {
+        }else if (event.getDamager() instanceof Projectile projectile) {
 
             if (projectile.getShooter() instanceof Player p) {
 
                 player = p;
             }
 
+        }else if (event.getDamager() instanceof WindCharge windCharge) {
+            if (windCharge.getShooter() instanceof Player p) {
+                player = p;
+
+            }
         }
+
 
         if (player == null) {
             return;
@@ -129,7 +130,7 @@ public class ItemFrameListener implements Listener {
     public void onBlockPlace(BlockPlaceEvent event) {
 
         Block placedBlock = event.getBlockPlaced();
-        Player player = event.getPlayer();
+
 
         Collection<Entity> entities = placedBlock.getWorld().getNearbyEntities(placedBlock.getLocation().add(0.5, 0.5, 0.5), 0.6, 0.6, 0.6);
 
